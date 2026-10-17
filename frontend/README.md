@@ -77,6 +77,9 @@ short cited excerpts), not the original PDF or full extracted text. Start a
 PostgreSQL server, set `DATABASE_URL`, and run `python -m app.migrate` from the
 backend directory to enable persistence. The saved-jobs panel reports
 unavailable database state without blocking extraction or local analysis.
+Use **View saved report** to review saved criteria, ranked scores, component
+scores, requirement statuses, and cited excerpts after a page refresh. The
+original PDF and full resume text cannot be reopened because they are not saved.
 Deleting a saved job deletes its associated candidate assessment records;
 **Remove** clears the candidate's PDF and in-memory assessment for the current
 browser session.

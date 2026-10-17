@@ -1501,6 +1501,112 @@ export default function Home() {
                     >
                       Delete saved job
                     </button>
+                    <details className="w-full rounded-xl border border-slate-200 bg-white p-4">
+                      <summary className="cursor-pointer font-semibold text-indigo-800">
+                        View saved report
+                      </summary>
+                      <div className="mt-4 space-y-4 text-sm text-slate-700">
+                        <div>
+                          <h3 className="font-semibold text-slate-900">Job criteria</h3>
+                          <p className="mt-1 whitespace-pre-wrap">{savedJob.job.description}</p>
+                          <p className="mt-2">
+                            <strong>Required skills:</strong>{" "}
+                            {savedJob.job.required_skills.join(", ") || "None"}
+                          </p>
+                          <p>
+                            <strong>Preferred skills:</strong>{" "}
+                            {savedJob.job.preferred_skills.join(", ") || "None"}
+                          </p>
+                          <ul className="mt-2 list-inside list-disc space-y-1">
+                            {savedJob.job.requirements.map((requirement) => (
+                              <li key={requirement.id}>
+                                {requirement.text} ({requirement.importance})
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <p className="text-xs text-slate-600">
+                          Saved reports contain scores and cited excerpts. PDFs and full resume text were not stored.
+                        </p>
+                        {savedJob.assessments.length === 0 ? (
+                          <p>No candidate assessments were saved with this job.</p>
+                        ) : (
+                          <div className="space-y-3">
+                            {[...savedJob.assessments]
+                              .sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity))
+                              .map((assessment) => (
+                                <article
+                                  className="rounded-lg border border-slate-200 bg-slate-50 p-4"
+                                  key={assessment.candidate_id}
+                                >
+                                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                    <h3 className="font-semibold text-slate-900">
+                                      {assessment.rank == null ? "Unranked" : `Rank ${assessment.rank}`} ·{" "}
+                                      {assessment.candidate_id}
+                                    </h3>
+                                    <strong className="text-indigo-800">
+                                      {assessment.complete && assessment.overall_score != null
+                                        ? `${assessment.overall_score.toFixed(2)} / 100`
+                                        : "Incomplete"}
+                                    </strong>
+                                  </div>
+                                  {assessment.evidence_method && (
+                                    <p className="mt-1 text-xs">{assessment.evidence_method}</p>
+                                  )}
+                                  {!assessment.complete && assessment.incomplete_reason && (
+                                    <p className="mt-2 text-amber-900">{assessment.incomplete_reason}</p>
+                                  )}
+                                  {assessment.complete && (
+                                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                                      {[
+                                        { label: "Skill coverage · 50%", value: assessment.skill_coverage },
+                                        { label: "Semantic relevance · 30%", value: assessment.semantic_relevance },
+                                        { label: "Evidence relevance · 20%", value: assessment.evidence_relevance },
+                                      ].map(({ label, value }) => (
+                                        <div className="rounded-lg bg-white p-2" key={label}>
+                                          <p className="text-xs">{label}</p>
+                                          <strong>{value?.score.toFixed(2) ?? "—"}</strong>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {assessment.arithmetic && (
+                                    <p className="mt-2 break-words text-xs">{assessment.arithmetic}</p>
+                                  )}
+                                  <p className="mt-3">
+                                    <strong>Matched skills:</strong>{" "}
+                                    {assessment.matched_skills.join(", ") || "None"}
+                                  </p>
+                                  <ul className="mt-3 space-y-3">
+                                    {assessment.requirement_assessments.map((requirement) => (
+                                      <li
+                                        className="rounded-lg border border-slate-200 bg-white p-3"
+                                        key={requirement.requirement_id}
+                                      >
+                                        <p className="font-medium text-slate-900">
+                                          {requirement.requirement} ·{" "}
+                                          {requirement.status.replaceAll("_", " ")}
+                                        </p>
+                                        {requirement.status === "unclear" && requirement.evidence.length === 0 && (
+                                          <p className="mt-1 text-xs text-slate-600">Unverified in the available text.</p>
+                                        )}
+                                        {requirement.evidence.map((quote, index) => (
+                                          <blockquote
+                                            className="mt-2 whitespace-pre-wrap border-l-2 border-indigo-200 pl-3"
+                                            key={`${quote.source_id}-${index}`}
+                                          >
+                                            {quote.quote}
+                                          </blockquote>
+                                        ))}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </article>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    </details>
                   </li>
                 ))}
               </ul>
