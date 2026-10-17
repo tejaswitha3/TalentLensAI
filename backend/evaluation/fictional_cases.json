@@ -1,0 +1,28 @@
+{
+  "job": {
+    "title": "Backend Engineer",
+    "description": "Build and operate API services.",
+    "required_skills": ["FastAPI", "Docker"],
+    "preferred_skills": ["Kubernetes"],
+    "requirements": [
+      {"text": "REST API development"},
+      {"text": "Docker hands-on experience"},
+      {"text": "Kubernetes experience"}
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": "casey-example",
+      "source_text": "Built HTTP endpoints using FastAPI. I have no experience with Docker.",
+      "semantic_scores": [0.99, 0.99, 0.90],
+      "expected_statuses": ["supported", "explicitly_contradicted", "unclear"]
+    },
+    {
+      "candidate_id": "jordan-example",
+      "source_text": "Built REST API services with FastAPI. Deployed workloads using Docker.",
+      "semantic_scores": [0.92, 0.87, 0.60],
+      "expected_statuses": ["supported", "supported", "unclear"]
+    }
+  ],
+  "expected_ranking": ["jordan-example", "casey-example"]
+}

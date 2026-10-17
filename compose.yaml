@@ -1,0 +1,60 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-talentlens}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in backend/.env}@db:5432/${POSTGRES_DB:-talentlens}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_started
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-talentlens}
+      POSTGRES_USER: ${POSTGRES_USER:-talentlens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in backend/.env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - talentlens-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  talentlens-postgres:

@@ -1,0 +1,17 @@
+# Python virtual environments
+**/.venv/
+**/venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Local environment files and secrets
+.env
+.env.*
+*.env
+!.env.example
+
+# Node.js and Next.js
+node_modules/
+.next/
